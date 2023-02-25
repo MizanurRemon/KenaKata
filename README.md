@@ -19,4 +19,9 @@
 * Update Product
 * Fetch Product for User
 * Fetch Product for Admin
+* Update Product Status
 * Delete Product
+
+### Order
+* Create Order
+* Update Order Status
