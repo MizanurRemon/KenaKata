@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -70,7 +71,7 @@ public class APIController {
     @PostMapping("/get_users")
     public ResponseEntity<?> getAllUsers() {
         try {
-            HashMap<String, Object> body = new HashMap<String, Object>();
+            LinkedHashMap<String, Object> body = new LinkedHashMap<>(); //hashmap sort its keys, but LinkedHashMap maintain its default order
             body.put("statusCode", HttpStatus.OK.value());
             body.put("data", apiService.getAllUser());
             return ResponseEntity.ok(body);
