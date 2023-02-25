@@ -3,6 +3,7 @@ package org.kenakata.Service;
 import org.kenakata.DAO.ApiDao;
 import org.kenakata.Helper.Hash.HashingString;
 import org.kenakata.Model.User;
+import org.kenakata.Model.UserWithOutPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class ApiServiceImplementation implements ApiService {
     }
 
     @Override
-    public List<User> getAllUser() {
+    public List<UserWithOutPassword> getAllUser() {
         return apiDao.getAllUser();
     }
 }

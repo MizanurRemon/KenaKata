@@ -3,6 +3,7 @@ package org.kenakata.DAO;
 import org.kenakata.Handler.ErrorHandler.ApiExceptionHandler;
 import org.kenakata.Handler.ErrorHandler.ApiRequestException;
 import org.kenakata.Model.User;
+import org.kenakata.Model.UserWithOutPassword;
 import org.kenakata.Utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,23 +34,21 @@ public class ApiDaoImplementation implements ApiDao {
     }
 
     @Override
-    public List<User> getAllUser() {
+    public List<UserWithOutPassword> getAllUser() {
 
         String sqlQuery = "SELECT * from tbl_user";
         try {
-            return jdbcTemplate.query(sqlQuery, new RowMapper<User>() {
+            return jdbcTemplate.query(sqlQuery, new RowMapper<UserWithOutPassword>() {
                 @Override
-                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                public UserWithOutPassword mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-                    User user = new User(
-                            rs.getInt(Constants.ID),
-                            rs.getString(Constants.NAME),
-                            rs.getString(Constants.ADDRESS),
-                            rs.getString(Constants.EMAIL),
-                            rs.getString(Constants.PHONE),
-                            rs.getString(Constants.PASSWORD),
-                            rs.getString(Constants.REG_DATE)
-                    );
+                    UserWithOutPassword user = new UserWithOutPassword();
+                    user.setId(rs.getInt(Constants.ID));
+                    user.setName(rs.getString(Constants.NAME));
+                    user.setAddress(rs.getString(Constants.ADDRESS));
+                    user.setEmail(rs.getString(Constants.EMAIL));
+                    user.setPhone(rs.getString(Constants.PHONE));
+                    user.setRegDate(rs.getString(Constants.REG_DATE));
                     return user;
                 }
             });
