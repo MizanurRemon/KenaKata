@@ -1,4 +1,4 @@
-package org.example.Service;
+package org.kenakata.Service;
 
 public class ApiServiceImplementation {
 }

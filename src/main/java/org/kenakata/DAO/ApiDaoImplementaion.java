@@ -1,4 +1,4 @@
-package org.example.DAO;
+package org.kenakata.DAO;
 
 public class ApiDaoImplementaion {
 }
