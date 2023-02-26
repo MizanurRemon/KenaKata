@@ -41,6 +41,23 @@ public class APIController {
 
     }
 
+    @PostMapping("/admin_login")
+    public ResponseEntity<?> adminLogin(String email, String password) {
+        try {
+            if (email.isEmpty() || password.isEmpty()) {
+                throw new ApiRequestException("empty login credentials");
+            } else {
+                LinkedHashMap<String, Object> body = new LinkedHashMap<>(); //hashmap sort its keys, but LinkedHashMap maintain its default order
+                body.put("statusCode", HttpStatus.OK.value());
+                body.put("message", Constants.LOGIN_SUCCESSFUL);
+                body.put("data", apiService.adminLogin(email, password));
+                return ResponseEntity.ok(body);
+            }
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
     @PostMapping("/user_registration")
     public ResponseEntity<?> userRegistration(EntityUser user) {
         try {

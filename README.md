@@ -2,6 +2,11 @@
 
 ## An E-Commerce API
 
+
+### Admin
+
+* Admin Login //done
+
 ### User
 
 * User Registration

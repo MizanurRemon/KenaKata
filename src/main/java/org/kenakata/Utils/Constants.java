@@ -5,6 +5,7 @@ public class Constants {
     public static String SERVER_RUNNING = "server running";
     public static String TBL_USER = "tbl_user";
     public static String TBL_CATEGORY = "tbl_category";
+    public static String TBL_ADMIN = "tbl_admin";
 
     public static String ID = "id";
     public static String NAME = "name";

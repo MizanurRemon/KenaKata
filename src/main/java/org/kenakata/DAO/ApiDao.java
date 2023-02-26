@@ -1,6 +1,7 @@
 package org.kenakata.DAO;
 
 import org.kenakata.Model.Entity.EntityUser;
+import org.kenakata.Model.JsonModel.Admin;
 import org.kenakata.Model.JsonModel.Category;
 import org.kenakata.Model.JsonModel.User;
 
@@ -29,4 +30,6 @@ public interface ApiDao {
     boolean updateCategoryStatus(Category category);
 
     boolean deleteCategory(Category category);
+
+    Admin adminLogin(String email, String password);
 }

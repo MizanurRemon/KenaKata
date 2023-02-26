@@ -2,6 +2,7 @@ package org.kenakata.DAO;
 
 import org.kenakata.Handler.ErrorHandler.ApiRequestException;
 import org.kenakata.Model.Entity.EntityUser;
+import org.kenakata.Model.JsonModel.Admin;
 import org.kenakata.Model.JsonModel.Category;
 import org.kenakata.Model.JsonModel.User;
 import org.kenakata.Utils.Constants;
@@ -202,5 +203,32 @@ public class ApiDaoImplementation implements ApiDao {
         String sqlQuery = "UPDATE " + Constants.TBL_CATEGORY + " SET status ='delete' " + "WHERE id=?";
 
         return jdbcTemplate.update(sqlQuery, category.getId()) == 1;
+    }
+
+    @Override
+    public Admin adminLogin(String email, String password) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("email", email);
+        params.addValue("password", password);
+
+        String query = "SELECT * from " + Constants.TBL_ADMIN + " WHERE email=:email AND password=:password";
+
+
+        try {
+            return namedParameterJdbcTemplate.queryForObject(query, params, new RowMapper<Admin>() {
+                @Override
+                public Admin mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                    Admin admin = new Admin();
+                    admin.id = rs.getInt("id");
+                    admin.name = rs.getString("name");
+                    admin.email = rs.getString("email");
+
+                    return admin;
+                }
+            });
+        } catch (Exception e) {
+            throw new ApiRequestException("invalid username/password");
+        }
     }
 }

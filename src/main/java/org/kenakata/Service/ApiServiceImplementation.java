@@ -3,6 +3,7 @@ package org.kenakata.Service;
 import org.kenakata.DAO.ApiDao;
 import org.kenakata.Helper.Hash.HashingString;
 import org.kenakata.Model.Entity.EntityUser;
+import org.kenakata.Model.JsonModel.Admin;
 import org.kenakata.Model.JsonModel.Category;
 import org.kenakata.Model.JsonModel.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,5 +75,10 @@ public class ApiServiceImplementation implements ApiService {
     @Override
     public boolean deleteCategory(Category category) {
         return apiDao.deleteCategory(category);
+    }
+
+    @Override
+    public Admin adminLogin(String email, String password) {
+        return apiDao.adminLogin(email, password);
     }
 }
