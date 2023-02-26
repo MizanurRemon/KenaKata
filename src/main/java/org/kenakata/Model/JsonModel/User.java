@@ -1,12 +1,8 @@
-package org.kenakata.Model;
+package org.kenakata.Model.JsonModel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
-public class UserWithOutPassword {
+public class User {
 
     private int id;
 

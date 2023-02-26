@@ -1,13 +1,12 @@
-package org.kenakata.Model;
+package org.kenakata.Model.Entity;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity(name = "tbl_user")
 @Table(name = "tbl_user")
-public class User {
+public class EntityUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +30,10 @@ public class User {
     private String regDate;
 
 
-    public User() {
+    public EntityUser() {
     }
 
-    public User(int id, String name, String address, String email, String phone, String password,  String regDate) {
+    public EntityUser(int id, String name, String address, String email, String phone, String password, String regDate) {
         this.id = id;
         this.name = name;
         this.address = address;

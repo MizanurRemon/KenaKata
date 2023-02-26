@@ -1,20 +1,27 @@
 # KenaKata
+
 ## An E-Commerce API
+
 ### User
+
 * User Registration
-* User Profile Update
+* User Profile Update //done
 * User Password Update
 * Password Hashing
-* User Login
+* User Login //done
+* JWT Auth
 
 ### Category
-* Create Product
-* Update Product
-* Fetch Product for User
-* Fetch Product for Admin
-* Delete Product
+
+* Create category //done
+* Update category //done
+* Update category status //done
+* Fetch category for User //done
+* Fetch category for Admin //done
+* Delete category //done
 
 ### Product
+
 * Create Product
 * Update Product
 * Fetch Product for User
@@ -23,5 +30,6 @@
 * Delete Product
 
 ### Order
+
 * Create Order
 * Update Order Status

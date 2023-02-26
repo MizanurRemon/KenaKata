@@ -12,7 +12,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(value = {ApiRequestException.class})
     public ResponseEntity<Object> apiRequestException(ApiRequestException e) {
 
-        int statusCode = HttpStatus.SERVICE_UNAVAILABLE.value();
+        int statusCode = HttpStatus.OK.value();
         ErrorItem errorItem = new ErrorItem(
                 statusCode,
                 e.getMessage()
@@ -22,5 +22,7 @@ public class ApiExceptionHandler {
 
         return new ResponseEntity<>(errorItem, HttpStatusCode.valueOf(statusCode));
     }
+
+
 
 }

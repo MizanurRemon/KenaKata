@@ -1,4 +1,4 @@
-package org.kenakata.Model;
+package org.kenakata.Model.JsonModel;
 
 public class CommonResponse {
     public int statusCode;
