@@ -43,8 +43,8 @@ public class ApiServiceImplementation implements ApiService {
     }
 
     @Override
-    public boolean mailExistence(EntityUser user) {
-        return false;
+    public List<User> mailExistence(EntityUser user) {
+        return apiDao.mailExistence(user);
     }
 
     @Override

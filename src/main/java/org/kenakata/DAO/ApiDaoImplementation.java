@@ -114,17 +114,31 @@ public class ApiDaoImplementation implements ApiDao {
     }
 
     @Override
-    public boolean mailExistence(EntityUser user) {
+    public List<User> mailExistence(EntityUser user) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("email", user.getEmail());
 
-//        HashMap<String, String> map = new HashMap<>();
-//        map.put("email", user.getEmail());
-//
-        String mailValidationQuery = "SELECT COUNT(email) as count FROM " + Constants.TBL_USER + " WHERE email =:email";
+        String mailValidationQuery = "SELECT * FROM " + Constants.TBL_USER + " WHERE email =:email";
 
 
-        return true;
+        try {
+            return namedParameterJdbcTemplate.query(mailValidationQuery,params, new RowMapper<User>() {
+                @Override
+                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                    User user = new User();
+                    user.setId(rs.getInt(Constants.ID));
+                    user.setName(rs.getString(Constants.NAME));
+                    user.setAddress(rs.getString(Constants.ADDRESS));
+                    user.setEmail(rs.getString(Constants.EMAIL));
+                    user.setPhone(rs.getString(Constants.PHONE));
+                    user.setRegDate(rs.getString(Constants.REG_DATE));
+                    return user;
+                }
+            });
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
     }
 
     @Override
@@ -136,7 +150,7 @@ public class ApiDaoImplementation implements ApiDao {
 
     @Override
     public List<Category> getAllCategoryUser() {
-        String query = "SELECT * from " + Constants.TBL_CATEGORY+" WHERE status != 'delete'";
+        String query = "SELECT * from " + Constants.TBL_CATEGORY + " WHERE status != 'delete'";
 
 
         try {

@@ -13,7 +13,7 @@ public interface ApiService {
     List<User> getAllUser();
     boolean updateUserProfile(User user);
     User userLogin(String mail, String password);
-    boolean mailExistence(EntityUser user);
+    List<User> mailExistence(EntityUser user);
     boolean addCategory(Category category);
     List<Category> getAllCategoryUser();
     List<Category> getAllCategoryAdmin();

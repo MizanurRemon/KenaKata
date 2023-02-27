@@ -66,23 +66,28 @@ public class APIController {
             } else {
                 try {
 
-                    CommonResponse response = new CommonResponse();
-                    if (apiService.userRegistration(user)) {
-                        response.message = "registration successful";
-                        response.statusCode = HttpStatus.OK.value();
-
+                    if (apiService.mailExistence(user).size() >= 1) {
+                        throw new ApiRequestException("already registered with this email");
                     } else {
-                        response.message = "registration failed";
-                        response.statusCode = HttpStatus.FORBIDDEN.value();
-                    }
 
-                    return ResponseEntity.ok(response);
+                        // throw new ApiRequestException("nothing with this email");
+                        CommonResponse response = new CommonResponse();
+                        if (apiService.userRegistration(user)) {
+                            response.message = "registration successful";
+                            response.statusCode = HttpStatus.OK.value();
+
+                        } else {
+                            response.message = "registration failed";
+                            response.statusCode = HttpStatus.FORBIDDEN.value();
+                        }
+
+                        return ResponseEntity.ok(response);
+                    }
 
                 } catch (Exception e) {
                     throw new ApiRequestException(e.getMessage());
                 }
             }
-
         } catch (Exception e) {
             throw new ApiRequestException(e.getMessage());
         }
@@ -260,4 +265,34 @@ public class APIController {
             throw new ApiRequestException(e.getMessage());
         }
     }
+
+
+    @PostMapping("/mail_validation")
+    public ResponseEntity<?> checkMail(EntityUser user) {
+        try {
+            if (user.getName().isEmpty() || user.getEmail().isEmpty() || user.getAddress().isEmpty() || user.getPhone().isEmpty() || user.getPassword().isEmpty()) {
+                throw new ApiRequestException("parameter can't be empty");
+            } else {
+                try {
+
+                    if (apiService.mailExistence(user).size() >= 1) {
+                        throw new ApiRequestException("already registered with this email");
+                    } else {
+                        //return ResponseEntity.ok(apiService.mailExistence(user));
+                        throw new ApiRequestException("nothing with this email");
+                    }
+
+                } catch (Exception e) {
+                    throw new ApiRequestException(e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+
+    }
+
+
 }
+
+

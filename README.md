@@ -9,10 +9,11 @@
 
 ### User
 
-* User Registration
+* User Registration //done
+* mail validation //done
 * User Profile Update //done
 * User Password Update
-* Password Hashing
+* Password Hashing //done
 * User Login //done
 * JWT Auth
 
