@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 @RestController
@@ -267,30 +268,43 @@ public class APIController {
     }
 
 
-    @PostMapping("/mail_validation")
-    public ResponseEntity<?> checkMail(EntityUser user) {
+    @PostMapping("/update_password")
+    public ResponseEntity<?> updatePassword(int id, String password) {
+
         try {
-            if (user.getName().isEmpty() || user.getEmail().isEmpty() || user.getAddress().isEmpty() || user.getPhone().isEmpty() || user.getPassword().isEmpty()) {
+            if (id == 0 || password.isEmpty()) {
                 throw new ApiRequestException("parameter can't be empty");
             } else {
-                try {
 
-                    if (apiService.mailExistence(user).size() >= 1) {
-                        throw new ApiRequestException("already registered with this email");
+                password = HashingString.passwordHashing(password);
+                if (password.equals(apiService.checkPreviousPassword(id))) {
+                    throw new ApiRequestException("can't use previous password");
+                } else {
+//                    HashMap<String, String> map = new HashMap<>();
+//                    map.put("password", apiService.checkPreviousPassword(id));
+//                    return ResponseEntity.ok(map);
+
+                    String pre_password = apiService.checkPreviousPassword(id);
+
+                    LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                    map.put("statusCode", HttpStatus.OK.value());
+                    if (apiService.updatePassword(id, password, pre_password)) {
+                        map.put("message", "updated successfully");
                     } else {
-                        //return ResponseEntity.ok(apiService.mailExistence(user));
-                        throw new ApiRequestException("nothing with this email");
+                        map.put("message", "can't change password");
                     }
 
-                } catch (Exception e) {
-                    throw new ApiRequestException(e.getMessage());
+                    return ResponseEntity.ok(map);
                 }
+
+
             }
         } catch (Exception e) {
             throw new ApiRequestException(e.getMessage());
         }
-
     }
+
+    ;
 
 
 }

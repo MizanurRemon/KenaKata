@@ -122,7 +122,7 @@ public class ApiDaoImplementation implements ApiDao {
 
 
         try {
-            return namedParameterJdbcTemplate.query(mailValidationQuery,params, new RowMapper<User>() {
+            return namedParameterJdbcTemplate.query(mailValidationQuery, params, new RowMapper<User>() {
                 @Override
                 public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 
@@ -139,6 +139,31 @@ public class ApiDaoImplementation implements ApiDao {
         } catch (Exception e) {
             throw new ApiRequestException(e.getMessage());
         }
+    }
+
+    @Override
+    public String checkPreviousPassword(int id) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+
+        String sqlQuery = "SELECT password FROM " + Constants.TBL_USER + " WHERE id =?";
+
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, new Object[]{id}, String.class);
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean updatePassword(int id, String password, String previousPassword) {
+
+        String sql = "UPDATE " + Constants.TBL_USER + " SET password=?, previous_password=?" + " WHERE id = ?";
+        return jdbcTemplate.update(
+                sql,
+                password,
+                previousPassword, id
+        ) == 1;
     }
 
     @Override

@@ -19,6 +19,10 @@ public interface ApiDao {
 
     List<User> mailExistence(EntityUser user);
 
+    String checkPreviousPassword(int id);
+
+    boolean updatePassword(int id, String password, String previousPassword);
+
     boolean addCategory(Category category);
 
     List<Category> getAllCategoryUser();

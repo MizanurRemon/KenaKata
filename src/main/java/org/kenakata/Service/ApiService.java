@@ -13,6 +13,9 @@ public interface ApiService {
     List<User> getAllUser();
     boolean updateUserProfile(User user);
     User userLogin(String mail, String password);
+    String checkPreviousPassword(int id);
+
+    boolean updatePassword(int id, String password, String previousPassword);
     List<User> mailExistence(EntityUser user);
     boolean addCategory(Category category);
     List<Category> getAllCategoryUser();

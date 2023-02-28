@@ -43,6 +43,16 @@ public class ApiServiceImplementation implements ApiService {
     }
 
     @Override
+    public String checkPreviousPassword(int id) {
+        return apiDao.checkPreviousPassword(id);
+    }
+
+    @Override
+    public boolean updatePassword(int id, String password, String previousPassword) {
+        return apiDao.updatePassword(id, password, previousPassword);
+    }
+
+    @Override
     public List<User> mailExistence(EntityUser user) {
         return apiDao.mailExistence(user);
     }

@@ -12,7 +12,7 @@
 * User Registration //done
 * mail validation //done
 * User Profile Update //done
-* User Password Update
+* User Password Update //done
 * Password Hashing //done
 * User Login //done
 * JWT Auth
