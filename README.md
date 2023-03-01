@@ -28,12 +28,13 @@
 
 ### Product
 
-* Create Product
-* Update Product
-* Fetch Product for User
-* Fetch Product for Admin
-* Update Product Status
-* Delete Product
+* Create Product (file upload) //done
+* Update Product for Admin //admin
+* Fetch Product for User //done
+* Fetch Product for Admin //done
+* Update Product Status Admin //done
+* Update Product Image Admin //done
+* File delete from path //done
 
 ### Order
 

@@ -3,6 +3,7 @@ package org.kenakata.Controller;
 
 import org.kenakata.Handler.ErrorHandler.ApiRequestException;
 import org.kenakata.Helper.Hash.HashingString;
+import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.JsonModel.Category;
 import org.kenakata.Model.JsonModel.CommonResponse;
 import org.kenakata.Model.Entity.EntityUser;
@@ -15,8 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 
 @RestController
@@ -304,8 +306,137 @@ public class APIController {
         }
     }
 
-    ;
+    @PostMapping("/addProduct")
+    public ResponseEntity<?> addProduct(EntityProduct product, MultipartFile file) throws IOException {
 
+        //apiService.uploadFile(product, file);
+
+        try {
+            if (product.getName().isEmpty() || product.getCategory_id() == 0 || product.getPrice().isEmpty() || product.getStock().isEmpty() || product.getStatus().isEmpty() || product.getUnit().isEmpty()) {
+                if (product.getCategory_id() == 0) {
+                    throw new ApiRequestException("empty category");
+                } else {
+                    throw new ApiRequestException("empty parameter");
+                }
+            } else {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put("statusCode", HttpStatus.OK.value());
+                if (apiService.addProduct(product, file)) {
+                    map.put("message", Constants.SUCCESSFUL);
+                } else {
+                    map.put("message", Constants.FAILED);
+                }
+
+                return ResponseEntity.ok(map);
+            }
+
+
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @PostMapping("/getProductUser")
+    public ResponseEntity<?> getProductForUser() {
+        try {
+            LinkedHashMap<String, Object> body = new LinkedHashMap<>(); //hashmap sort its keys, but LinkedHashMap maintain its default order
+            body.put("statusCode", HttpStatus.OK.value());
+            body.put("data", apiService.getAllProductForUser());
+
+            return ResponseEntity.ok(body);
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @PostMapping("/getProductAdmin")
+    public ResponseEntity<?> getAllProductForAdmin() {
+        try {
+            LinkedHashMap<String, Object> body = new LinkedHashMap<>(); //hashmap sort its keys, but LinkedHashMap maintain its default order
+            body.put("statusCode", HttpStatus.OK.value());
+            body.put("data", apiService.getAllProductForAdmin());
+
+            return ResponseEntity.ok(body);
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @PostMapping("/updateProduct")
+    public ResponseEntity<?> updateProduct(EntityProduct product) throws IOException {
+
+        //apiService.uploadFile(product, file);
+
+        try {
+            if (product.getName().isEmpty() || product.getPrice().isEmpty() || product.getStock().isEmpty() || product.getUnit().isEmpty()) {
+                throw new ApiRequestException("empty parameter");
+            } else {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put("statusCode", HttpStatus.OK.value());
+                if (apiService.updateProduct(product)) {
+                    map.put("message", Constants.SUCCESSFUL);
+                } else {
+                    map.put("message", Constants.FAILED);
+                }
+
+                return ResponseEntity.ok(map);
+            }
+
+
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @PostMapping("/updateProductStatus")
+    public ResponseEntity<?> updateProductStatus(int id, String status) throws IOException {
+
+
+        try {
+            if (id == 0 || status.isEmpty()) {
+                throw new ApiRequestException("empty parameter");
+            } else {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put("statusCode", HttpStatus.OK.value());
+                if (apiService.updateProductStatus(id, status)) {
+                    map.put("message", Constants.SUCCESSFUL);
+                } else {
+                    map.put("message", Constants.FAILED);
+                }
+
+                return ResponseEntity.ok(map);
+            }
+
+
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @PostMapping("/updateProductImage")
+    public ResponseEntity<?> updateProductImage(int id, MultipartFile file) throws IOException {
+
+
+        try {
+            if (id == 0 || file.isEmpty()) {
+                throw new ApiRequestException("empty parameter");
+            } else {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put("statusCode", HttpStatus.OK.value());
+                if (apiService.updateProductImage(id, file)) {
+                    map.put("message", Constants.SUCCESSFUL);
+                } else {
+                    map.put("message", Constants.FAILED);
+                }
+
+                return ResponseEntity.ok(map);
+            }
+
+
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
 
 }
 

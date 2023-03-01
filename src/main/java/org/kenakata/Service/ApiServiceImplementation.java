@@ -2,14 +2,18 @@ package org.kenakata.Service;
 
 import org.kenakata.DAO.ApiDao;
 import org.kenakata.Helper.Hash.HashingString;
+import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.Entity.EntityUser;
 import org.kenakata.Model.JsonModel.Admin;
 import org.kenakata.Model.JsonModel.Category;
+import org.kenakata.Model.JsonModel.Product;
 import org.kenakata.Model.JsonModel.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -90,5 +94,35 @@ public class ApiServiceImplementation implements ApiService {
     @Override
     public Admin adminLogin(String email, String password) {
         return apiDao.adminLogin(email, password);
+    }
+
+    @Override
+    public boolean addProduct(EntityProduct product, MultipartFile file) throws IOException {
+        return apiDao.addProduct(product, file);
+    }
+
+    @Override
+    public List<Product> getAllProductForUser() {
+        return apiDao.getAllProductForUser();
+    }
+
+    @Override
+    public List<Product> getAllProductForAdmin() {
+        return apiDao.getAllProductForAdmin();
+    }
+
+    @Override
+    public boolean updateProduct(EntityProduct product) {
+        return apiDao.updateProduct(product);
+    }
+
+    @Override
+    public boolean updateProductStatus(int id, String status) {
+        return apiDao.updateProductStatus(id, status);
+    }
+
+    @Override
+    public boolean updateProductImage(int id, MultipartFile file) {
+        return apiDao.updateProductImage(id, file);
     }
 }

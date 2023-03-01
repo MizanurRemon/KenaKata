@@ -1,9 +1,12 @@
 package org.kenakata.DAO;
 
 import org.kenakata.Handler.ErrorHandler.ApiRequestException;
+import org.kenakata.Helper.ChangeDateFormat;
+import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.Entity.EntityUser;
 import org.kenakata.Model.JsonModel.Admin;
 import org.kenakata.Model.JsonModel.Category;
+import org.kenakata.Model.JsonModel.Product;
 import org.kenakata.Model.JsonModel.User;
 import org.kenakata.Utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +15,19 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -270,4 +282,231 @@ public class ApiDaoImplementation implements ApiDao {
             throw new ApiRequestException("invalid username/password");
         }
     }
+
+    @Override
+    public boolean addProduct(EntityProduct product, MultipartFile file) throws IOException {
+        String finalPath = null;
+        String ext = "";
+
+        if (!file.getOriginalFilename().isEmpty()) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+            Calendar cal = Calendar.getInstance();
+
+            String storageLocation = "/home/remon/SpringWorkSpace/Storage/KenaKata/";
+
+            String fileName = product.getName() + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+
+            finalPath = storageLocation + fileName;
+
+            ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+
+            file.transferTo(new File(finalPath));
+        }
+
+        if (ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg") || ext.toLowerCase().isEmpty()) {
+            String sqlQuery = "INSERT into " + Constants.TBL_PRODUCT + " (name, category_id,  price, unit, stock, image, status) " + " values(?,?,?,?,?,?,?)";
+
+            return jdbcTemplate.update(sqlQuery, product.getName(), product.getCategory_id(), product.getPrice(), product.getUnit(), product.getStock(), finalPath, product.getStatus()) == 1;
+
+        } else {
+            throw new ApiRequestException("invalid image format (supported format: jpg, png, jpeg)");
+        }
+
+
+    }
+
+    @Override
+    public List<Product> getAllProductForUser() {
+
+        String query = "SELECT p.id, p.name, p.price, p.unit,p.stock,p.image,p.status,p.date,p.updated_at," +
+                " c.id as cid, c.name as cname, c.status as cstatus, c.date as cdate" +
+                " FROM tbl_product p" +
+                " LEFT JOIN tbl_category c" +
+                " ON p.category_id = c.id" +
+                " WHERE p.status= 'active' AND c.status = 'active'" + " ORDER BY p.id DESC";
+        try {
+            return jdbcTemplate.query(query, new RowMapper<Product>() {
+                @Override
+                public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Product product = new Product();
+                    product.id = rs.getInt("id");
+                    product.name = rs.getString("name");
+                    product.price = rs.getInt("price");
+                    product.unit = rs.getString("unit");
+                    product.stock = rs.getInt("stock");
+                    product.image = rs.getString("image");
+                    product.status = rs.getString("status");
+                    try {
+                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Product.Category category = new Product.Category();
+                    category.id = rs.getInt("cid");
+                    category.name = rs.getString("cname");
+                    category.status = rs.getString("cstatus");
+                    try {
+                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("cdate"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    product.category = category;
+                    return product;
+                }
+            });
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Product> getAllProductForAdmin() {
+
+        String query = "SELECT p.id, p.name, p.price, p.unit,p.stock,p.image,p.status,p.date,p.updated_at," +
+                " c.id as cid, c.name as cname, c.status as cstatus, c.date as cdate" +
+                " FROM tbl_product p" +
+                " LEFT JOIN tbl_category c" +
+                " ON p.category_id = c.id" + " ORDER BY id DESC";
+        try {
+            return jdbcTemplate.query(query, new RowMapper<Product>() {
+                @Override
+                public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Product product = new Product();
+                    product.id = rs.getInt("id");
+                    product.name = rs.getString("name");
+                    product.price = rs.getInt("price");
+                    product.unit = rs.getString("unit");
+                    product.stock = rs.getInt("stock");
+                    product.image = rs.getString("image");
+                    product.status = rs.getString("status");
+                    try {
+                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Product.Category category = new Product.Category();
+                    category.id = rs.getInt("cid");
+                    category.name = rs.getString("cname");
+                    category.status = rs.getString("cstatus");
+                    try {
+                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("cdate"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    product.category = category;
+                    return product;
+                }
+            });
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean updateProduct(EntityProduct product) {
+        String availableQuery = "SELECT COUNT(*) FROM " + Constants.TBL_PRODUCT + " WHERE id =?";
+        String sqlQuery = "UPDATE " + Constants.TBL_PRODUCT + " SET name=?,  price=?, unit=?, stock=? " + " WHERE id=?";
+        try {
+            String count = jdbcTemplate.queryForObject(availableQuery, new Object[]{product.getId()}, String.class);
+            System.out.println("id: " + String.valueOf(product.getId()) + " count:: " + count);
+            if (Integer.parseInt(count) >= 1) {
+                return jdbcTemplate.update(sqlQuery, product.getName(), product.getPrice(), product.getUnit(), product.getStock(), product.getId()) == 1;
+
+            } else {
+                throw new ApiRequestException("invalid id");
+            }
+
+
+        } catch (Exception e) {
+            throw new ApiRequestException("invalid id");
+        }
+    }
+
+    @Override
+    public boolean updateProductStatus(int id, String status) {
+        String availableQuery = "SELECT COUNT(*) FROM " + Constants.TBL_PRODUCT + " WHERE id =?";
+        String sqlQuery = "UPDATE " + Constants.TBL_PRODUCT + " SET status=? " + " WHERE id=?";
+        try {
+            String count = jdbcTemplate.queryForObject(availableQuery, new Object[]{id}, String.class);
+            // System.out.println("id: "+String.valueOf(product.getId())+" count:: "+count);
+            if (Integer.parseInt(count) >= 1) {
+                return jdbcTemplate.update(sqlQuery, status, id) == 1;
+
+            } else {
+                throw new ApiRequestException("invalid id");
+            }
+
+
+        } catch (Exception e) {
+            throw new ApiRequestException("invalid id");
+        }
+    }
+
+    @Override
+    public boolean updateProductImage(int id, MultipartFile file) {
+        String availableQuery = "SELECT COUNT(*) FROM " + Constants.TBL_PRODUCT + " WHERE id =?";
+        String sqlQuery = "UPDATE " + Constants.TBL_PRODUCT + " SET image=?" + " WHERE id=?";
+        String currentImagePathQuery = "SELECT image FROM " + Constants.TBL_PRODUCT + " WHERE id =?";
+        String productNameQuery = "SELECT name FROM " + Constants.TBL_PRODUCT + " WHERE id =?";
+
+        try {
+            String count = jdbcTemplate.queryForObject(availableQuery, new Object[]{id}, String.class);
+            String currentImagePath = jdbcTemplate.queryForObject(currentImagePathQuery, new Object[]{id}, String.class);
+            String productName = jdbcTemplate.queryForObject(productNameQuery, new Object[]{id}, String.class);
+            //System.out.println("data:: "+currentImagePath + " " + productName);
+
+            if (Integer.parseInt(count) >= 1) {
+
+
+                String finalPath = null;
+                String ext = "";
+
+                if (!file.getOriginalFilename().isEmpty()) {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+                    Calendar cal = Calendar.getInstance();
+
+                    String storageLocation = "/home/remon/SpringWorkSpace/Storage/KenaKata/";
+
+                    String fileName = productName + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+
+                    finalPath = storageLocation + fileName;
+
+                    ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+
+                }
+
+                if (ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg") || ext.toLowerCase().isEmpty()) {
+                    if (currentImagePath != null) {
+                        Files.deleteIfExists(Paths.get(currentImagePath));
+                    }
+                    file.transferTo(new File(finalPath));
+                    return jdbcTemplate.update(sqlQuery, finalPath, id) == 1;
+
+                } else {
+                    throw new ApiRequestException("invalid image format (supported format: jpg, png, jpeg)");
+                }
+
+            } else {
+                throw new ApiRequestException("invalid id");
+            }
+
+
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+
 }
