@@ -1,7 +1,7 @@
 package org.kenakata.Model.Entity;
 
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity(name = "tbl_product")
 @Table(name = "tbl_product")

@@ -2,7 +2,10 @@ package org.kenakata.Model.Entity;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
+
+import javax.persistence.*;
+import java.util.Date;
+
 
 @Entity(name = "tbl_user")
 @Table(name = "tbl_user")
@@ -27,13 +30,13 @@ public class EntityUser {
     @Column(name = "reg_date")
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "dd MMM, yyyy")
-    private String regDate;
+    private Date regDate;
 
 
     public EntityUser() {
     }
 
-    public EntityUser(int id, String name, String address, String email, String phone, String password, String regDate) {
+    public EntityUser(int id, String name, String address, String email, String phone, String password, Date regDate) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -100,11 +103,11 @@ public class EntityUser {
         this.prePassword = prePassword;
     }*/
 
-    public String getRegDate() {
+    public Date getRegDate() {
         return regDate;
     }
 
-    public void setRegDate(String regDate) {
+    public void setRegDate(Date regDate) {
         this.regDate = regDate;
     }
 }

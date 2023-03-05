@@ -199,7 +199,7 @@ public class ApiDaoImplementation implements ApiDao {
                     category.setId(rs.getInt(Constants.ID));
                     category.setName(rs.getString(Constants.NAME));
                     category.setStatus(rs.getString(Constants.STATUS));
-                    category.setDate(rs.getString(Constants.DATE));
+                    category.setDate(rs.getDate(Constants.DATE));
 
                     return category;
                 }
@@ -223,7 +223,7 @@ public class ApiDaoImplementation implements ApiDao {
                     category.setId(rs.getInt(Constants.ID));
                     category.setName(rs.getString(Constants.NAME));
                     category.setStatus(rs.getString(Constants.STATUS));
-                    category.setDate(rs.getString(Constants.DATE));
+                    category.setDate(rs.getDate(Constants.DATE));
 
                     return category;
                 }
@@ -285,31 +285,38 @@ public class ApiDaoImplementation implements ApiDao {
 
     @Override
     public boolean addProduct(EntityProduct product, MultipartFile file) throws IOException {
+
+        String sqlQuery = "INSERT into " + Constants.TBL_PRODUCT + " (name, category_id,  price, unit, stock, image, status) "
+                + " values(?,?,?,?,?,?,?)";
+
         String finalPath = null;
         String ext = "";
 
-        if (!file.getOriginalFilename().isEmpty()) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-            Calendar cal = Calendar.getInstance();
+        try {
+            if (!file.getOriginalFilename().isEmpty()) {
+                DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+                Calendar cal = Calendar.getInstance();
 
-            String storageLocation = "/home/remon/SpringWorkSpace/Storage/KenaKata/";
+                String storageLocation = "/home/remon/SpringWorkSpace/Storage/KenaKata/";
 
-            String fileName = product.getName() + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+                String fileName = product.getName() + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 
-            finalPath = storageLocation + fileName;
+                finalPath = storageLocation + fileName;
 
-            ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+                ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 
-            file.transferTo(new File(finalPath));
-        }
+                file.transferTo(new File(finalPath));
+            }
 
-        if (ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg") || ext.toLowerCase().isEmpty()) {
-            String sqlQuery = "INSERT into " + Constants.TBL_PRODUCT + " (name, category_id,  price, unit, stock, image, status) " + " values(?,?,?,?,?,?,?)";
+            if (ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg") || ext.toLowerCase().isEmpty()) {
 
-            return jdbcTemplate.update(sqlQuery, product.getName(), product.getCategory_id(), product.getPrice(), product.getUnit(), product.getStock(), finalPath, product.getStatus()) == 1;
+                return jdbcTemplate.update(sqlQuery, product.getName(), product.getCategory_id(), product.getPrice(), product.getUnit(), product.getStock(), finalPath, product.getStatus()) == 1;
 
-        } else {
-            throw new ApiRequestException("invalid image format (supported format: jpg, png, jpeg)");
+            } else {
+                throw new ApiRequestException("invalid image format (supported format: jpg, png, jpeg)");
+            }
+        }catch (Exception e){
+            throw new ApiRequestException(e.getMessage());
         }
 
 
@@ -430,7 +437,7 @@ public class ApiDaoImplementation implements ApiDao {
 
 
         } catch (Exception e) {
-            throw new ApiRequestException("invalid id");
+            throw new ApiRequestException(e.getMessage());
         }
     }
 
@@ -450,7 +457,7 @@ public class ApiDaoImplementation implements ApiDao {
 
 
         } catch (Exception e) {
-            throw new ApiRequestException("invalid id");
+            throw new ApiRequestException(e.getMessage());
         }
     }
 

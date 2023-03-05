@@ -3,8 +3,8 @@ package org.kenakata.Model.JsonModel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 public class Product {
     public int id;

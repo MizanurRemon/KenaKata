@@ -1,7 +1,8 @@
 package org.kenakata.Model.JsonModel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity(name = "tbl_category")
 @Table(name = "tbl_category")
@@ -19,12 +20,12 @@ public class Category {
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "dd MMM, yyyy")
-    private String date;
+    private Date date;
 
     public Category() {
     }
 
-    public Category(int id, String name, String status, String date) {
+    public Category(int id, String name, String status, Date date) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -55,11 +56,11 @@ public class Category {
         this.status = status;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 }
