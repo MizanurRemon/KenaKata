@@ -13,6 +13,7 @@ import org.kenakata.Utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ public class APIController {
     private ApiService apiService;
 
 
-    @PostMapping("/")
+    @GetMapping("/")
     public ResponseEntity<?> test() {
 
         try {
@@ -126,7 +127,7 @@ public class APIController {
         }
     }
 
-    @PostMapping("/get_users")
+    @GetMapping("/get_users")
     public ResponseEntity<?> getAllUsers() {
         try {
             LinkedHashMap<String, Object> body = new LinkedHashMap<>(); //hashmap sort its keys, but LinkedHashMap maintain its default order
@@ -190,7 +191,7 @@ public class APIController {
         }
     }
 
-    @PostMapping("/get_all_category_admin")
+    @GetMapping("/get_all_category_admin")
     public ResponseEntity<?> getAllCategoryAdmin() {
         try {
             LinkedHashMap<String, Object> body = new LinkedHashMap<>(); //hashmap sort its keys, but LinkedHashMap maintain its default order
@@ -336,7 +337,7 @@ public class APIController {
         }
     }
 
-    @PostMapping("/getProductUser")
+    @GetMapping("/getProductUser")
     public ResponseEntity<?> getProductForUser() {
         try {
             LinkedHashMap<String, Object> body = new LinkedHashMap<>(); //hashmap sort its keys, but LinkedHashMap maintain its default order
@@ -349,7 +350,7 @@ public class APIController {
         }
     }
 
-    @PostMapping("/getProductAdmin")
+    @GetMapping("/getProductAdmin")
     public ResponseEntity<?> getAllProductForAdmin() {
         try {
             LinkedHashMap<String, Object> body = new LinkedHashMap<>(); //hashmap sort its keys, but LinkedHashMap maintain its default order
