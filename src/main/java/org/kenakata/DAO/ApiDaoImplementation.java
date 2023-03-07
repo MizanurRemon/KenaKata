@@ -1,13 +1,12 @@
 package org.kenakata.DAO;
 
+import org.aspectj.weaver.ast.Or;
 import org.kenakata.Handler.ErrorHandler.ApiRequestException;
 import org.kenakata.Helper.ChangeDateFormat;
+import org.kenakata.Model.Entity.EntityOrder;
 import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.Entity.EntityUser;
-import org.kenakata.Model.JsonModel.Admin;
-import org.kenakata.Model.JsonModel.Category;
-import org.kenakata.Model.JsonModel.Product;
-import org.kenakata.Model.JsonModel.User;
+import org.kenakata.Model.JsonModel.*;
 import org.kenakata.Utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -315,7 +314,7 @@ public class ApiDaoImplementation implements ApiDao {
             } else {
                 throw new ApiRequestException("invalid image format (supported format: jpg, png, jpeg)");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new ApiRequestException(e.getMessage());
         }
 
@@ -513,6 +512,305 @@ public class ApiDaoImplementation implements ApiDao {
         } catch (Exception e) {
             throw new ApiRequestException(e.getMessage());
         }
+    }
+
+    @Override
+    public boolean insertUserOrder(EntityOrder order) {
+
+        String sqlQuery = "INSERT " + Constants.TBL_ORDER
+                + " (user_id, product_id)"
+                + " values(?, ?)";
+        try {
+            return jdbcTemplate.update(sqlQuery, order.getUser_id(), order.getProduct_id()) == 1;
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Order> getAllOrderForAdmin() {
+        String sqlQuery = "SELECT o.*, p.*, c.*, u.* FROM " + Constants.TBL_ORDER + " o" +
+                " LEFT JOIN " + Constants.TBL_PRODUCT + " p" +
+                " ON p.id = o.product_id" +
+                " LEFT JOIN " + Constants.TBL_CATEGORY + " c" +
+                " ON p.category_id = c.id" +
+                " LEFT JOIN " + Constants.TBL_USER + " u" +
+                " ON o.user_id = u.id";
+        try {
+
+            return jdbcTemplate.query(sqlQuery, new RowMapper<Order>() {
+                @Override
+                public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                    Order order = new Order();
+                    order.id = rs.getInt("o.id");
+                    order.status = rs.getString("o.status");
+
+                    try {
+                        order.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.created_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        order.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    User user = new User();
+                    user.setId(rs.getInt("u.id"));
+                    user.setName(rs.getString("u.name"));
+                    user.setAddress(rs.getString("u.address"));
+                    user.setEmail(rs.getString("u.email"));
+                    user.setPhone(rs.getString("u.phone"));
+
+                    try {
+                        user.setRegDate(ChangeDateFormat.ChangeDateFormat(rs.getString("reg_date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Product product = new Product();
+                    product.id = rs.getInt("p.id");
+                    product.name = rs.getString("p.name");
+                    product.price = rs.getInt("p.price");
+                    product.unit = rs.getString("p.unit");
+                    product.stock = rs.getInt("p.stock");
+                    product.image = rs.getString("p.image");
+                    product.status = rs.getString("p.status");
+                    try {
+                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("p.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Product.Category category = new Product.Category();
+                    category.id = rs.getInt("c.id");
+                    category.name = rs.getString("c.name");
+                    category.status = rs.getString("c.status");
+
+                    try {
+                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("c.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    product.category = category;
+
+
+                    order.user = user;
+                    order.product = product;
+
+                    return order;
+                }
+            });
+
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Order> getAllOrderByID(int id) {
+        String sqlQuery = "SELECT o.*, p.*, c.*, u.* FROM " + Constants.TBL_ORDER + " o" +
+                " LEFT JOIN " + Constants.TBL_PRODUCT + " p" +
+                " ON p.id = o.product_id" +
+                " LEFT JOIN " + Constants.TBL_CATEGORY + " c" +
+                " ON p.category_id = c.id" +
+                " LEFT JOIN " + Constants.TBL_USER + " u" +
+                " ON o.user_id = u.id" +
+                " WHERE o.user_id = " + id;
+        try {
+
+            return jdbcTemplate.query(sqlQuery, new RowMapper<Order>() {
+                @Override
+                public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                    Order order = new Order();
+                    order.id = rs.getInt("o.id");
+                    order.status = rs.getString("o.status");
+
+                    try {
+                        order.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.created_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        order.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    User user = new User();
+                    user.setId(rs.getInt("u.id"));
+                    user.setName(rs.getString("u.name"));
+                    user.setAddress(rs.getString("u.address"));
+                    user.setEmail(rs.getString("u.email"));
+                    user.setPhone(rs.getString("u.phone"));
+
+                    try {
+                        user.setRegDate(ChangeDateFormat.ChangeDateFormat(rs.getString("reg_date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Product product = new Product();
+                    product.id = rs.getInt("p.id");
+                    product.name = rs.getString("p.name");
+                    product.price = rs.getInt("p.price");
+                    product.unit = rs.getString("p.unit");
+                    product.stock = rs.getInt("p.stock");
+                    product.image = rs.getString("p.image");
+                    product.status = rs.getString("p.status");
+                    try {
+                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("p.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Product.Category category = new Product.Category();
+                    category.id = rs.getInt("c.id");
+                    category.name = rs.getString("c.name");
+                    category.status = rs.getString("c.status");
+
+                    try {
+                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("c.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    product.category = category;
+
+
+                    order.user = user;
+                    order.product = product;
+
+                    return order;
+                }
+            });
+
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Order> getAllOrderByStatus(String status) {
+        String sqlQuery = "SELECT o.*, p.*, c.*, u.* FROM " + Constants.TBL_ORDER + " o" +
+                " LEFT JOIN " + Constants.TBL_PRODUCT + " p" +
+                " ON p.id = o.product_id" +
+                " LEFT JOIN " + Constants.TBL_CATEGORY + " c" +
+                " ON p.category_id = c.id" +
+                " LEFT JOIN " + Constants.TBL_USER + " u" +
+                " ON o.user_id = u.id" +
+                " WHERE o.status = "+"'"+status+"'";
+        try {
+
+            return jdbcTemplate.query(sqlQuery, new RowMapper<Order>() {
+                @Override
+                public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                    Order order = new Order();
+                    order.id = rs.getInt("o.id");
+                    order.status = rs.getString("o.status");
+
+                    try {
+                        order.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.created_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        order.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    User user = new User();
+                    user.setId(rs.getInt("u.id"));
+                    user.setName(rs.getString("u.name"));
+                    user.setAddress(rs.getString("u.address"));
+                    user.setEmail(rs.getString("u.email"));
+                    user.setPhone(rs.getString("u.phone"));
+
+                    try {
+                        user.setRegDate(ChangeDateFormat.ChangeDateFormat(rs.getString("reg_date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Product product = new Product();
+                    product.id = rs.getInt("p.id");
+                    product.name = rs.getString("p.name");
+                    product.price = rs.getInt("p.price");
+                    product.unit = rs.getString("p.unit");
+                    product.stock = rs.getInt("p.stock");
+                    product.image = rs.getString("p.image");
+                    product.status = rs.getString("p.status");
+                    try {
+                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("p.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Product.Category category = new Product.Category();
+                    category.id = rs.getInt("c.id");
+                    category.name = rs.getString("c.name");
+                    category.status = rs.getString("c.status");
+
+                    try {
+                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("c.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    product.category = category;
+
+
+                    order.user = user;
+                    order.product = product;
+
+                    return order;
+                }
+            });
+
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean updateOrderStatus(Order order) {
+
+        String sqlQuery = "UPDATE " + Constants.TBL_ORDER + " SET status = ?" +
+                " WHERE id = ?";
+
+        try {
+            return jdbcTemplate.update(sqlQuery, order.status, order.id) == 1;
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+
     }
 
 

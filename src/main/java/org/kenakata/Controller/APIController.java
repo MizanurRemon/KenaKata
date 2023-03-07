@@ -1,12 +1,15 @@
 package org.kenakata.Controller;
 
 
+import org.aspectj.weaver.ast.Or;
 import org.kenakata.Handler.ErrorHandler.ApiRequestException;
 import org.kenakata.Helper.Hash.HashingString;
+import org.kenakata.Model.Entity.EntityOrder;
 import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.JsonModel.Category;
 import org.kenakata.Model.JsonModel.CommonResponse;
 import org.kenakata.Model.Entity.EntityUser;
+import org.kenakata.Model.JsonModel.Order;
 import org.kenakata.Model.JsonModel.User;
 import org.kenakata.Service.ApiService;
 import org.kenakata.Utils.Constants;
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -365,7 +370,6 @@ public class APIController {
 
     @PostMapping("/updateProduct")
     public ResponseEntity<?> updateProduct(EntityProduct product) throws IOException {
-
         //apiService.uploadFile(product, file);
 
         try {
@@ -434,6 +438,107 @@ public class APIController {
             }
 
 
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @PostMapping("/insertUserOrder")
+    public ResponseEntity<?> insertUserOrder(EntityOrder order) {
+        try {
+            if (order.getUser_id() == 0 || order.getProduct_id() == 0) {
+                throw new ApiRequestException("parameter passing error");
+            } else {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put(Constants.STATUS_CODE, HttpStatus.OK.value());
+                if (apiService.insertUserOrder(order)) {
+                    map.put("message", Constants.SUCCESSFUL);
+                } else {
+                    map.put("message", Constants.FAILED);
+                }
+
+                return ResponseEntity.ok(map);
+            }
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getAllOrderForAdmin")
+    public ResponseEntity<?> getAllOrderForAdmin() {
+        try {
+            LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+            map.put(Constants.STATUS_CODE, HttpStatus.OK.value());
+            map.put(Constants.DATA, apiService.getAllOrderForAdmin());
+
+            return ResponseEntity.ok(map);
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getAllOrderByID")
+    public ResponseEntity<?> getAllOrderByID(int id) {
+        try {
+            if (id == 0) {
+                throw new ApiRequestException("empty parameter");
+            } else {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put(Constants.STATUS_CODE, HttpStatus.OK.value());
+                map.put(Constants.DATA, apiService.getAllOrderByID(id));
+
+                return ResponseEntity.ok(map);
+            }
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @PostMapping("/updateOrderStatus")
+    public ResponseEntity<?> updateOrderStatus(int id, String status) {
+        try {
+
+            //System.out.println(String.valueOf(order.id) + " " + order.status);
+//            Map<String , Object> param = new HashMap<>();
+//            param.put("id", order.id);
+//            param.put("status", order.status);
+
+            Order order = new Order();
+            order.id = id;
+            order.status = status;
+
+            if (order.id == 0 || order.status.isEmpty()) {
+                throw new ApiRequestException("empty parameter");
+            } else {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put(Constants.STATUS_CODE, HttpStatus.OK.value());
+
+                if (apiService.updateOrderStatus(order)) {
+                    map.put(Constants.MESSAGE, Constants.SUCCESSFUL);
+                } else {
+                    map.put(Constants.MESSAGE, Constants.FAILED);
+                }
+
+                return ResponseEntity.ok(map);
+
+            }
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getAllOrderByStatus")
+    public ResponseEntity<?> getAllOrderByStatus(String status) {
+        try {
+            if (status.isEmpty()) {
+                throw new ApiRequestException("empty parameter");
+            } else {
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put(Constants.STATUS_CODE, HttpStatus.OK.value());
+                map.put(Constants.DATA, apiService.getAllOrderByStatus(status));
+
+                return ResponseEntity.ok(map);
+            }
         } catch (Exception e) {
             throw new ApiRequestException(e.getMessage());
         }

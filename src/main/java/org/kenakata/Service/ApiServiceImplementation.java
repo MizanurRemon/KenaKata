@@ -2,12 +2,10 @@ package org.kenakata.Service;
 
 import org.kenakata.DAO.ApiDao;
 import org.kenakata.Helper.Hash.HashingString;
+import org.kenakata.Model.Entity.EntityOrder;
 import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.Entity.EntityUser;
-import org.kenakata.Model.JsonModel.Admin;
-import org.kenakata.Model.JsonModel.Category;
-import org.kenakata.Model.JsonModel.Product;
-import org.kenakata.Model.JsonModel.User;
+import org.kenakata.Model.JsonModel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,5 +122,30 @@ public class ApiServiceImplementation implements ApiService {
     @Override
     public boolean updateProductImage(int id, MultipartFile file) {
         return apiDao.updateProductImage(id, file);
+    }
+
+    @Override
+    public boolean insertUserOrder(EntityOrder order) {
+        return apiDao.insertUserOrder(order);
+    }
+
+    @Override
+    public List<Order> getAllOrderForAdmin() {
+        return apiDao.getAllOrderForAdmin();
+    }
+
+    @Override
+    public List<Order> getAllOrderByID(int id) {
+        return apiDao.getAllOrderByID(id);
+    }
+
+    @Override
+    public boolean updateOrderStatus(Order order) {
+        return apiDao.updateOrderStatus(order);
+    }
+
+    @Override
+    public List<Order> getAllOrderByStatus(String status) {
+        return apiDao.getAllOrderByStatus(status);
     }
 }

@@ -1,11 +1,10 @@
 package org.kenakata.DAO;
 
+import org.aspectj.weaver.ast.Or;
+import org.kenakata.Model.Entity.EntityOrder;
 import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.Entity.EntityUser;
-import org.kenakata.Model.JsonModel.Admin;
-import org.kenakata.Model.JsonModel.Category;
-import org.kenakata.Model.JsonModel.Product;
-import org.kenakata.Model.JsonModel.User;
+import org.kenakata.Model.JsonModel.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -52,4 +51,14 @@ public interface ApiDao {
     boolean updateProductStatus(int id, String status);
 
     boolean updateProductImage(int id, MultipartFile file);
+
+    boolean insertUserOrder(EntityOrder order);
+
+    List<Order> getAllOrderForAdmin();
+
+    List<Order> getAllOrderByID(int id);
+
+    List<Order> getAllOrderByStatus(String status);
+
+    boolean updateOrderStatus(Order order);
 }

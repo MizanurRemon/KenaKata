@@ -38,5 +38,8 @@
 
 ### Order
 
-* Create Order
-* Update Order Status
+* Create Order //done
+* Update Order Status admin //admin
+* GET all order from admin //done
+* get order by user id //done
+* get order by user status //done
