@@ -1,6 +1,7 @@
 # KenaKata
 
 ## An E-Commerce API
+#### A single Vendor
 
 
 ### Admin
