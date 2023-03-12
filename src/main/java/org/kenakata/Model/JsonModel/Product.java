@@ -2,7 +2,7 @@ package org.kenakata.Model.JsonModel;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -11,28 +11,22 @@ public class Product {
     public String name;
 
     //public int category_id;
-    public Category category;
+
     public int price;
     public String unit;
     public int stock;
     public String image;
+
     public String status;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "dd MMM, yyyy")
-    public String date;
+    public String created_at;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "dd MMM, yyyy")
     public String updated_at;
 
+    public Category category;
 
-    public static class Category {
-
-        //@JsonProperty("category_id")
-        public int id;
-        public String name;
-        public String status;
-        public String date;
-    }
 
     public int getId() {
         return id;
@@ -50,13 +44,6 @@ public class Product {
         this.name = name;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
 
     public int getPrice() {
         return price;
@@ -98,12 +85,12 @@ public class Product {
         this.status = status;
     }
 
-    public String getDate() {
-        return date;
+    public String getCreated_at() {
+        return created_at;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
     public String getUpdated_at() {

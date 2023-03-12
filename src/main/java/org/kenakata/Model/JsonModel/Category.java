@@ -1,35 +1,36 @@
 package org.kenakata.Model.JsonModel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.kenakata.Utils.DateFormat;
+
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity(name = "tbl_category")
-@Table(name = "tbl_category")
 public class Category {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-    @Column(name = "name")
-    private String name;
-    @Column(name = "status")
-    private String status;
+    public int id;
 
-    @Column(name = "date")
+    public String name;
+
+    public String status;
+
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd MMM, yyyy")
-    private Date date;
+    @JsonFormat(pattern = DateFormat.myDateFormat)
+    public String created_at;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = DateFormat.myDateFormat)
+    public String updated_at;
 
     public Category() {
     }
 
-    public Category(int id, String name, String status, Date date) {
+    public Category(int id, String name, String status, String created_at, String updated_at) {
         this.id = id;
         this.name = name;
         this.status = status;
-        this.date = date;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
     }
 
     public int getId() {
@@ -56,11 +57,19 @@ public class Category {
         this.status = status;
     }
 
-    public Date getDate() {
-        return date;
+    public String getCreated_at() {
+        return created_at;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
     }
 }

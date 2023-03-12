@@ -27,10 +27,10 @@ public class EntityUser {
     private String password;
 //    @Column(name = "previous_password")
 //    private String prePassword;
-    @Column(name = "reg_date")
+    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "dd MMM, yyyy")
-    private Date regDate;
+    private Date created_at;
 
 
     public EntityUser() {
@@ -44,7 +44,7 @@ public class EntityUser {
         this.phone = phone;
         this.password = password;
         //this.prePassword = prePassword;
-        this.regDate = regDate;
+        this.created_at = regDate;
     }
 
     public int getId() {
@@ -103,11 +103,11 @@ public class EntityUser {
         this.prePassword = prePassword;
     }*/
 
-    public Date getRegDate() {
-        return regDate;
+    public Date getCreated_at() {
+        return created_at;
     }
 
-    public void setRegDate(Date regDate) {
-        this.regDate = regDate;
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
     }
 }

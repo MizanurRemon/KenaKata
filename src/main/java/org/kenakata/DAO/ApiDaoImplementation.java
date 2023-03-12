@@ -1,8 +1,8 @@
 package org.kenakata.DAO;
 
-import org.aspectj.weaver.ast.Or;
 import org.kenakata.Handler.ErrorHandler.ApiRequestException;
 import org.kenakata.Helper.ChangeDateFormat;
+import org.kenakata.Model.Entity.EntityCategory;
 import org.kenakata.Model.Entity.EntityOrder;
 import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.Entity.EntityUser;
@@ -66,7 +66,16 @@ public class ApiDaoImplementation implements ApiDao {
                     user.setAddress(rs.getString(Constants.ADDRESS));
                     user.setEmail(rs.getString(Constants.EMAIL));
                     user.setPhone(rs.getString(Constants.PHONE));
-                    user.setRegDate(rs.getString(Constants.REG_DATE));
+                    try {
+                        user.setCreated_at(ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        user.setUpdated_at(ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                     return user;
                 }
             });
@@ -115,7 +124,8 @@ public class ApiDaoImplementation implements ApiDao {
                     user.setAddress(rs.getString(Constants.ADDRESS));
                     user.setEmail(rs.getString(Constants.EMAIL));
                     user.setPhone(rs.getString(Constants.PHONE));
-                    user.setRegDate(rs.getString(Constants.REG_DATE));
+                    user.setCreated_at(rs.getString(Constants.CREATED_AT));
+                    user.setUpdated_at(rs.getString(Constants.UPDATED_AT));
                     return user;
                 }
             });
@@ -143,7 +153,7 @@ public class ApiDaoImplementation implements ApiDao {
                     user.setAddress(rs.getString(Constants.ADDRESS));
                     user.setEmail(rs.getString(Constants.EMAIL));
                     user.setPhone(rs.getString(Constants.PHONE));
-                    user.setRegDate(rs.getString(Constants.REG_DATE));
+                    user.setCreated_at(rs.getString(Constants.CREATED_AT));
                     return user;
                 }
             });
@@ -178,7 +188,7 @@ public class ApiDaoImplementation implements ApiDao {
     }
 
     @Override
-    public boolean addCategory(Category category) {
+    public boolean addCategory(EntityCategory category) {
         String sqlQuery = "INSERT into " + Constants.TBL_CATEGORY + " (name) " + " values(?)";
 
         return jdbcTemplate.update(sqlQuery, category.getName()) == 1;
@@ -198,13 +208,22 @@ public class ApiDaoImplementation implements ApiDao {
                     category.setId(rs.getInt(Constants.ID));
                     category.setName(rs.getString(Constants.NAME));
                     category.setStatus(rs.getString(Constants.STATUS));
-                    category.setDate(rs.getDate(Constants.DATE));
+                    try {
+                        category.setCreated_at(ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        category.setUpdated_at(ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     return category;
                 }
             });
         } catch (Exception e) {
-            throw new ApiRequestException("invalid username/password");
+            throw new ApiRequestException(e.getMessage());
         }
     }
 
@@ -222,18 +241,27 @@ public class ApiDaoImplementation implements ApiDao {
                     category.setId(rs.getInt(Constants.ID));
                     category.setName(rs.getString(Constants.NAME));
                     category.setStatus(rs.getString(Constants.STATUS));
-                    category.setDate(rs.getDate(Constants.DATE));
+                    try {
+                        category.setCreated_at(ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        category.setUpdated_at(ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     return category;
                 }
             });
         } catch (Exception e) {
-            throw new ApiRequestException("invalid username/password");
+            throw new ApiRequestException(e.getMessage());
         }
     }
 
     @Override
-    public boolean updateCategory(Category category) {
+    public boolean updateCategory(EntityCategory category) {
 
 
         String sqlQuery = "UPDATE " + Constants.TBL_CATEGORY + " SET name =? " + "WHERE id=?";
@@ -242,14 +270,14 @@ public class ApiDaoImplementation implements ApiDao {
     }
 
     @Override
-    public boolean updateCategoryStatus(Category category) {
+    public boolean updateCategoryStatus(EntityCategory category) {
         String sqlQuery = "UPDATE " + Constants.TBL_CATEGORY + " SET status =? " + "WHERE id=?";
 
         return jdbcTemplate.update(sqlQuery, category.getStatus(), category.getId()) == 1;
     }
 
     @Override
-    public boolean deleteCategory(Category category) {
+    public boolean deleteCategory(EntityCategory category) {
         String sqlQuery = "UPDATE " + Constants.TBL_CATEGORY + " SET status ='delete' " + "WHERE id=?";
 
         return jdbcTemplate.update(sqlQuery, category.getId()) == 1;
@@ -257,6 +285,7 @@ public class ApiDaoImplementation implements ApiDao {
 
     @Override
     public Admin adminLogin(String email, String password) {
+        System.out.println("password:: " + password);
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("email", email);
         params.addValue("password", password);
@@ -278,7 +307,7 @@ public class ApiDaoImplementation implements ApiDao {
                 }
             });
         } catch (Exception e) {
-            throw new ApiRequestException("invalid username/password");
+            throw new ApiRequestException(e.getMessage());
         }
     }
 
@@ -296,7 +325,7 @@ public class ApiDaoImplementation implements ApiDao {
                 DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
                 Calendar cal = Calendar.getInstance();
 
-                String storageLocation = "/home/remon/SpringWorkSpace/Storage/KenaKata/";
+                String storageLocation = "/home/remon/LocalServerStorage/Kenakata/";
 
                 String fileName = product.getName() + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 
@@ -304,12 +333,17 @@ public class ApiDaoImplementation implements ApiDao {
 
                 ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 
-                file.transferTo(new File(finalPath));
+
             }
 
             if (ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg") || ext.toLowerCase().isEmpty()) {
 
-                return jdbcTemplate.update(sqlQuery, product.getName(), product.getCategory_id(), product.getPrice(), product.getUnit(), product.getStock(), finalPath, product.getStatus()) == 1;
+                if (jdbcTemplate.update(sqlQuery, product.getName(), product.getCategory_id(), product.getPrice(), product.getUnit(), product.getStock(), finalPath, product.getStatus()) == 1) {
+                    file.transferTo(new File(finalPath));
+                    return true;
+                } else {
+                    return false;
+                }
 
             } else {
                 throw new ApiRequestException("invalid image format (supported format: jpg, png, jpeg)");
@@ -324,8 +358,7 @@ public class ApiDaoImplementation implements ApiDao {
     @Override
     public List<Product> getAllProductForUser() {
 
-        String query = "SELECT p.id, p.name, p.price, p.unit,p.stock,p.image,p.status,p.date,p.updated_at," +
-                " c.id as cid, c.name as cname, c.status as cstatus, c.date as cdate" +
+        String query = "SELECT p.*, c.*" +
                 " FROM tbl_product p" +
                 " LEFT JOIN tbl_category c" +
                 " ON p.category_id = c.id" +
@@ -335,15 +368,15 @@ public class ApiDaoImplementation implements ApiDao {
                 @Override
                 public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Product product = new Product();
-                    product.id = rs.getInt("id");
-                    product.name = rs.getString("name");
-                    product.price = rs.getInt("price");
-                    product.unit = rs.getString("unit");
-                    product.stock = rs.getInt("stock");
-                    product.image = rs.getString("image");
-                    product.status = rs.getString("status");
+                    product.id = rs.getInt("p.id");
+                    product.name = rs.getString("p.name");
+                    product.price = rs.getInt("p.price");
+                    product.unit = rs.getString("p.unit");
+                    product.stock = rs.getInt("p.stock");
+                    product.image = rs.getString("p.image");
+                    product.status = rs.getString("p.status");
                     try {
-                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        product.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("created_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -353,12 +386,18 @@ public class ApiDaoImplementation implements ApiDao {
                         throw new RuntimeException(e);
                     }
 
-                    Product.Category category = new Product.Category();
-                    category.id = rs.getInt("cid");
-                    category.name = rs.getString("cname");
-                    category.status = rs.getString("cstatus");
+                    Category category = new Category();
+                    category.id = rs.getInt("c.id");
+                    category.name = rs.getString("c.name");
+                    category.status = rs.getString("c.status");
                     try {
-                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("cdate"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        category.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        category.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -374,43 +413,48 @@ public class ApiDaoImplementation implements ApiDao {
     @Override
     public List<Product> getAllProductForAdmin() {
 
-        String query = "SELECT p.id, p.name, p.price, p.unit,p.stock,p.image,p.status,p.date,p.updated_at," +
-                " c.id as cid, c.name as cname, c.status as cstatus, c.date as cdate" +
+        String query = "SELECT p.*, c.*" +
                 " FROM tbl_product p" +
                 " LEFT JOIN tbl_category c" +
-                " ON p.category_id = c.id" + " ORDER BY id DESC";
+                " ON p.category_id = c.id" + " ORDER BY p.id DESC";
         try {
             return jdbcTemplate.query(query, new RowMapper<Product>() {
                 @Override
                 public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Product product = new Product();
-                    product.id = rs.getInt("id");
-                    product.name = rs.getString("name");
-                    product.price = rs.getInt("price");
-                    product.unit = rs.getString("unit");
-                    product.stock = rs.getInt("stock");
-                    product.image = rs.getString("image");
-                    product.status = rs.getString("status");
+                    product.id = rs.getInt("p.id");
+                    product.name = rs.getString("p.name");
+                    product.price = rs.getInt("p.price");
+                    product.unit = rs.getString("p.unit");
+                    product.stock = rs.getInt("p.stock");
+                    product.image = rs.getString("p.image");
+                    product.status = rs.getString("p.status");
                     try {
-                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        product.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
                     try {
-                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
-                    Product.Category category = new Product.Category();
-                    category.id = rs.getInt("cid");
-                    category.name = rs.getString("cname");
-                    category.status = rs.getString("cstatus");
+                    Category category = new Category();
+                    category.id = rs.getInt("c.id");
+                    category.name = rs.getString("c.name");
+                    category.status = rs.getString("c.status");
                     try {
-                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("cdate"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        category.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
+                    try {
+                        category.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString(Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
                     product.category = category;
                     return product;
                 }
@@ -483,7 +527,7 @@ public class ApiDaoImplementation implements ApiDao {
                     DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
                     Calendar cal = Calendar.getInstance();
 
-                    String storageLocation = "/home/remon/SpringWorkSpace/Storage/KenaKata/";
+                    String storageLocation = "/home/remon/LocalServerStorage/Kenakata/";
 
                     String fileName = productName + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 
@@ -497,8 +541,15 @@ public class ApiDaoImplementation implements ApiDao {
                     if (currentImagePath != null) {
                         Files.deleteIfExists(Paths.get(currentImagePath));
                     }
-                    file.transferTo(new File(finalPath));
-                    return jdbcTemplate.update(sqlQuery, finalPath, id) == 1;
+                    //file.transferTo(new File(finalPath));
+                    // return jdbcTemplate.update(sqlQuery, finalPath, id) == 1;
+
+                    if (jdbcTemplate.update(sqlQuery, finalPath, id) == 1) {
+                        file.transferTo(new File(finalPath));
+                        return true;
+                    } else {
+                        return false;
+                    }
 
                 } else {
                     throw new ApiRequestException("invalid image format (supported format: jpg, png, jpeg)");
@@ -547,13 +598,13 @@ public class ApiDaoImplementation implements ApiDao {
                     order.status = rs.getString("o.status");
 
                     try {
-                        order.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.created_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        order.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
                     try {
-                        order.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        order.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -566,7 +617,13 @@ public class ApiDaoImplementation implements ApiDao {
                     user.setPhone(rs.getString("u.phone"));
 
                     try {
-                        user.setRegDate(ChangeDateFormat.ChangeDateFormat(rs.getString("reg_date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                        user.setCreated_at(ChangeDateFormat.ChangeDateFormat(rs.getString("u." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        user.setUpdated_at(ChangeDateFormat.ChangeDateFormat(rs.getString("u." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -580,31 +637,35 @@ public class ApiDaoImplementation implements ApiDao {
                     product.image = rs.getString("p.image");
                     product.status = rs.getString("p.status");
                     try {
-                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("p.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        product.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
                     try {
-                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
-                    Product.Category category = new Product.Category();
+                    Category category = new Category();
                     category.id = rs.getInt("c.id");
                     category.name = rs.getString("c.name");
                     category.status = rs.getString("c.status");
 
                     try {
-                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("c.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        category.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("c." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        category.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("c." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
                     product.category = category;
-
-
                     order.user = user;
                     order.product = product;
 
@@ -638,13 +699,13 @@ public class ApiDaoImplementation implements ApiDao {
                     order.status = rs.getString("o.status");
 
                     try {
-                        order.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.created_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        order.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
                     try {
-                        order.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        order.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -657,7 +718,13 @@ public class ApiDaoImplementation implements ApiDao {
                     user.setPhone(rs.getString("u.phone"));
 
                     try {
-                        user.setRegDate(ChangeDateFormat.ChangeDateFormat(rs.getString("reg_date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                        user.setCreated_at(ChangeDateFormat.ChangeDateFormat(rs.getString("u." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        user.setUpdated_at(ChangeDateFormat.ChangeDateFormat(rs.getString("u." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -671,31 +738,35 @@ public class ApiDaoImplementation implements ApiDao {
                     product.image = rs.getString("p.image");
                     product.status = rs.getString("p.status");
                     try {
-                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("p.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        product.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
                     try {
-                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
-                    Product.Category category = new Product.Category();
+                    Category category = new Category();
                     category.id = rs.getInt("c.id");
                     category.name = rs.getString("c.name");
                     category.status = rs.getString("c.status");
 
                     try {
-                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("c.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        category.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("c." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        category.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("c." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
                     product.category = category;
-
-
                     order.user = user;
                     order.product = product;
 
@@ -717,7 +788,7 @@ public class ApiDaoImplementation implements ApiDao {
                 " ON p.category_id = c.id" +
                 " LEFT JOIN " + Constants.TBL_USER + " u" +
                 " ON o.user_id = u.id" +
-                " WHERE o.status = "+"'"+status+"'";
+                " WHERE o.status = " + "'" + status + "'";
         try {
 
             return jdbcTemplate.query(sqlQuery, new RowMapper<Order>() {
@@ -729,13 +800,13 @@ public class ApiDaoImplementation implements ApiDao {
                     order.status = rs.getString("o.status");
 
                     try {
-                        order.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.created_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        order.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
                     try {
-                        order.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        order.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("o." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -748,7 +819,13 @@ public class ApiDaoImplementation implements ApiDao {
                     user.setPhone(rs.getString("u.phone"));
 
                     try {
-                        user.setRegDate(ChangeDateFormat.ChangeDateFormat(rs.getString("reg_date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                        user.setCreated_at(ChangeDateFormat.ChangeDateFormat(rs.getString("u." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        user.setUpdated_at(ChangeDateFormat.ChangeDateFormat(rs.getString("u." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy"));
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -762,31 +839,35 @@ public class ApiDaoImplementation implements ApiDao {
                     product.image = rs.getString("p.image");
                     product.status = rs.getString("p.status");
                     try {
-                        product.date = ChangeDateFormat.ChangeDateFormat(rs.getString("p.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        product.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
                     try {
-                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p.updated_at"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        product.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("p." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
-                    Product.Category category = new Product.Category();
+                    Category category = new Category();
                     category.id = rs.getInt("c.id");
                     category.name = rs.getString("c.name");
                     category.status = rs.getString("c.status");
 
                     try {
-                        category.date = ChangeDateFormat.ChangeDateFormat(rs.getString("c.date"), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                        category.created_at = ChangeDateFormat.ChangeDateFormat(rs.getString("c." + Constants.CREATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        category.updated_at = ChangeDateFormat.ChangeDateFormat(rs.getString("c." + Constants.UPDATED_AT), "yyyy-MM-dd HH:mm:ss", "hh:mm a, dd MMM, yyyy");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
                     product.category = category;
-
-
                     order.user = user;
                     order.product = product;
 

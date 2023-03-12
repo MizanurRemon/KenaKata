@@ -2,6 +2,7 @@ package org.kenakata.Service;
 
 import org.kenakata.DAO.ApiDao;
 import org.kenakata.Helper.Hash.HashingString;
+import org.kenakata.Model.Entity.EntityCategory;
 import org.kenakata.Model.Entity.EntityOrder;
 import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.Entity.EntityUser;
@@ -60,7 +61,7 @@ public class ApiServiceImplementation implements ApiService {
     }
 
     @Override
-    public boolean addCategory(Category category) {
+    public boolean addCategory(EntityCategory category) {
         return apiDao.addCategory(category);
     }
 
@@ -75,17 +76,17 @@ public class ApiServiceImplementation implements ApiService {
     }
 
     @Override
-    public boolean updateCategory(Category category) {
+    public boolean updateCategory(EntityCategory category) {
         return apiDao.updateCategory(category);
     }
 
     @Override
-    public boolean updateCategoryStatus(Category category) {
+    public boolean updateCategoryStatus(EntityCategory category) {
         return apiDao.updateCategoryStatus(category);
     }
 
     @Override
-    public boolean deleteCategory(Category category) {
+    public boolean deleteCategory(EntityCategory category) {
         return apiDao.deleteCategory(category);
     }
 

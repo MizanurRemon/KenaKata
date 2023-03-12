@@ -16,7 +16,8 @@ public class Constants {
     public static String EMAIL = "email";
     public static String PHONE = "phone";
     public static String PASSWORD = "password";
-    public static String REG_DATE = "reg_date";
+    public static String CREATED_AT = "created_at";
+    public static String UPDATED_AT = "updated_at";
     public static String STATUS = "status";
     public static String DATE = "date";
     public static String LOGIN_SUCCESSFUL = "login successful";

@@ -1,12 +1,11 @@
 package org.kenakata.Controller;
 
 
-import org.aspectj.weaver.ast.Or;
 import org.kenakata.Handler.ErrorHandler.ApiRequestException;
 import org.kenakata.Helper.Hash.HashingString;
 import org.kenakata.Model.Entity.EntityOrder;
 import org.kenakata.Model.Entity.EntityProduct;
-import org.kenakata.Model.JsonModel.Category;
+import org.kenakata.Model.Entity.EntityCategory;
 import org.kenakata.Model.JsonModel.CommonResponse;
 import org.kenakata.Model.Entity.EntityUser;
 import org.kenakata.Model.JsonModel.Order;
@@ -23,9 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -162,7 +159,7 @@ public class APIController {
     }
 
     @PostMapping("/add_category")
-    public ResponseEntity<?> addCategory(Category category) {
+    public ResponseEntity<?> addCategory(EntityCategory category) {
         try {
             if (category.getName().isEmpty()) {
                 throw new ApiRequestException("category name missing");
@@ -210,7 +207,7 @@ public class APIController {
     }
 
     @PostMapping("/update_category")
-    public ResponseEntity<?> updateCategory(Category category) {
+    public ResponseEntity<?> updateCategory(EntityCategory category) {
         try {
             if (category.getId() == 0 || category.getName().isEmpty()) {
                 throw new ApiRequestException("parameter value missing");
@@ -232,7 +229,7 @@ public class APIController {
     }
 
     @PostMapping("/update_category_status")
-    public ResponseEntity<?> updateCategoryStatus(Category category) {
+    public ResponseEntity<?> updateCategoryStatus(EntityCategory category) {
         try {
             if (category.getId() == 0 || category.getStatus().isEmpty()) {
                 throw new ApiRequestException("parameter value missing");
@@ -254,7 +251,7 @@ public class APIController {
     }
 
     @PostMapping("/delete_category")
-    public ResponseEntity<?> deleteCategory(Category category) {
+    public ResponseEntity<?> deleteCategory(EntityCategory category) {
         try {
             if (category.getId() == 0) {
                 throw new ApiRequestException("parameter value missing");

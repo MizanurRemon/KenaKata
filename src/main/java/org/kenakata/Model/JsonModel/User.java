@@ -16,7 +16,10 @@ public class User {
 
 
     @JsonFormat(pattern = "dd MMM, yyyy")
-    private String regDate;
+    private String created_at;
+
+    @JsonFormat(pattern = "dd MMM, yyyy")
+    private String updated_at;
 
     public int getId() {
         return id;
@@ -59,11 +62,19 @@ public class User {
     }
 
 
-    public String getRegDate() {
-        return regDate;
+    public String getCreated_at() {
+        return created_at;
     }
 
-    public void setRegDate(String regDate) {
-        this.regDate = regDate;
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
     }
 }

@@ -1,5 +1,6 @@
 package org.kenakata.Service;
 
+import org.kenakata.Model.Entity.EntityCategory;
 import org.kenakata.Model.Entity.EntityOrder;
 import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.Entity.EntityUser;
@@ -24,17 +25,17 @@ public interface ApiService {
 
     List<User> mailExistence(EntityUser user);
 
-    boolean addCategory(Category category);
+    boolean addCategory(EntityCategory category);
 
     List<Category> getAllCategoryUser();
 
     List<Category> getAllCategoryAdmin();
 
-    boolean updateCategory(Category category);
+    boolean updateCategory(EntityCategory category);
 
-    boolean updateCategoryStatus(Category category);
+    boolean updateCategoryStatus(EntityCategory category);
 
-    boolean deleteCategory(Category category);
+    boolean deleteCategory(EntityCategory category);
 
     Admin adminLogin(String email, String password);
 
