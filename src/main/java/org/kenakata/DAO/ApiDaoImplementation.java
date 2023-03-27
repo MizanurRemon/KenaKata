@@ -230,7 +230,7 @@ public class ApiDaoImplementation implements ApiDao {
 
     @Override
     public List<Category> getAllCategoryAdmin() {
-        String query = "SELECT * from " + Constants.TBL_CATEGORY;
+        String query = "SELECT * from " + Constants.TBL_CATEGORY+ " ORDER BY id DESC";
 
 
         try {
