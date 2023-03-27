@@ -456,6 +456,7 @@ public class ApiDaoImplementation implements ApiDao {
                         throw new RuntimeException(e);
                     }
 
+                    //
                     product.category = category;
                     return product;
                 }
