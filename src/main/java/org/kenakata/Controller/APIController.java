@@ -315,7 +315,7 @@ public class APIController {
         //apiService.uploadFile(product, file);
 
         try {
-            if (product.getName().isEmpty() || product.getCategory_id() == 0 || product.getPrice().isEmpty() || product.getStock().isEmpty() || product.getStatus().isEmpty() || product.getUnit().isEmpty()) {
+            if (product.getName().isEmpty() || product.getCategory_id() == 0 || product.getPrice().isEmpty() || product.getStock().isEmpty() || product.getUnit().isEmpty()) {
                 if (product.getCategory_id() == 0) {
                     throw new ApiRequestException("empty category");
                 } else {

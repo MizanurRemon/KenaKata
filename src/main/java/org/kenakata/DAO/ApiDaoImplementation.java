@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -196,7 +197,7 @@ public class ApiDaoImplementation implements ApiDao {
 
     @Override
     public List<Category> getAllCategoryUser() {
-        String query = "SELECT * from " + Constants.TBL_CATEGORY + " WHERE status != 'delete'";
+        String query = "SELECT * from " + Constants.TBL_CATEGORY + " WHERE status = 'active'";
 
 
         try {
@@ -314,8 +315,8 @@ public class ApiDaoImplementation implements ApiDao {
     @Override
     public boolean addProduct(EntityProduct product, MultipartFile file) throws IOException {
 
-        String sqlQuery = "INSERT into " + Constants.TBL_PRODUCT + " (name, category_id,  price, unit, stock, image, status) "
-                + " values(?,?,?,?,?,?,?)";
+        String sqlQuery = "INSERT into " + Constants.TBL_PRODUCT + " (name, category_id,  price, unit, stock, image) "
+                + " values(?,?,?,?,?,?)";
 
         String finalPath = null;
         String ext = "";
@@ -325,9 +326,9 @@ public class ApiDaoImplementation implements ApiDao {
                 DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
                 Calendar cal = Calendar.getInstance();
 
-                String storageLocation = "/home/remon/LocalServerStorage/Kenakata/";
+                String storageLocation = Constants.STORAGE_LOCATION;
 
-                String fileName = product.getName() + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+                String fileName = (product.getName() + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1)).replace(" ", "");
 
                 finalPath = storageLocation + fileName;
 
@@ -336,9 +337,9 @@ public class ApiDaoImplementation implements ApiDao {
 
             }
 
-            if (ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg") || ext.toLowerCase().isEmpty()) {
+            if (ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg")|| ext.toLowerCase().equals("webp") || ext.toLowerCase().isEmpty()) {
 
-                if (jdbcTemplate.update(sqlQuery, product.getName(), product.getCategory_id(), product.getPrice(), product.getUnit(), product.getStock(), finalPath, product.getStatus()) == 1) {
+                if (jdbcTemplate.update(sqlQuery, product.getName(), product.getCategory_id(), product.getPrice(), product.getUnit(), product.getStock(), finalPath) == 1) {
                     file.transferTo(new File(finalPath));
                     return true;
                 } else {
@@ -527,17 +528,17 @@ public class ApiDaoImplementation implements ApiDao {
                     DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
                     Calendar cal = Calendar.getInstance();
 
-                    String storageLocation = "/home/remon/LocalServerStorage/Kenakata/";
+                    String storageLocation = Constants.STORAGE_LOCATION;
 
-                    String fileName = productName + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
-
+                    String fileName = (productName + dateFormat.format(cal.getTime()) + "." + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1)).replace(" ", "");
+                    System.out.println("filename:: "+fileName);
                     finalPath = storageLocation + fileName;
 
                     ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 
                 }
 
-                if (ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg") || ext.toLowerCase().isEmpty()) {
+                if (ext.toLowerCase().equals("png") || ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg")|| ext.toLowerCase().equals("webp") || ext.toLowerCase().isEmpty()) {
                     if (currentImagePath != null) {
                         Files.deleteIfExists(Paths.get(currentImagePath));
                     }

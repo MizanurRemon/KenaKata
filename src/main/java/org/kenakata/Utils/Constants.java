@@ -1,6 +1,7 @@
 package org.kenakata.Utils;
 
 public class Constants {
+    public static String STORAGE_LOCATION = "D:/Projects/Storage/Kenakata/";
     public static String STATUS_CODE = "statusCode";
     public static String MESSAGE = "message";
     public static String SERVER_RUNNING = "server running";

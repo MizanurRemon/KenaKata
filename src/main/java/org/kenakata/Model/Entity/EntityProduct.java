@@ -27,20 +27,16 @@ public class EntityProduct {
     @Column(name = "stock")
     private String stock;
 
-    @Column(name = "status")
-    private String status;
-
     public EntityProduct() {
     }
 
-    public EntityProduct(int id, String name, String price, int category_id, String unit, String stock, String status) {
+    public EntityProduct(int id, String name, String price, int category_id, String unit, String stock) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.category_id = category_id;
         this.unit = unit;
         this.stock = stock;
-        this.status = status;
     }
 
     public int getId() {
@@ -91,11 +87,4 @@ public class EntityProduct {
         this.stock = stock;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }
