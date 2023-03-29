@@ -3,6 +3,7 @@ package org.kenakata.Controller;
 
 import org.kenakata.Handler.ErrorHandler.ApiRequestException;
 import org.kenakata.Helper.Hash.HashingString;
+import org.kenakata.Helper.Phone.UserValidation;
 import org.kenakata.Model.Entity.EntityOrder;
 import org.kenakata.Model.Entity.EntityProduct;
 import org.kenakata.Model.Entity.EntityCategory;
@@ -66,33 +67,51 @@ public class APIController {
 
     @PostMapping("/user_registration")
     public ResponseEntity<?> userRegistration(EntityUser user) {
+        System.out.println("name:: "+user.getPhone());
         try {
             if (user.getName().isEmpty() || user.getEmail().isEmpty() || user.getAddress().isEmpty() || user.getPhone().isEmpty() || user.getPassword().isEmpty()) {
                 throw new ApiRequestException("parameter can't be empty");
             } else {
-                try {
-
-                    if (apiService.mailExistence(user).size() >= 1) {
-                        throw new ApiRequestException("already registered with this email");
-                    } else {
-
-                        // throw new ApiRequestException("nothing with this email");
-                        CommonResponse response = new CommonResponse();
-                        if (apiService.userRegistration(user)) {
-                            response.message = "registration successful";
-                            response.statusCode = HttpStatus.OK.value();
-
-                        } else {
-                            response.message = "registration failed";
-                            response.statusCode = HttpStatus.FORBIDDEN.value();
-                        }
-
-                        return ResponseEntity.ok(response);
+                if(!UserValidation.checkNumber(user.getPhone()) || !UserValidation.checkName(user.getName()) || !UserValidation.checkPassword(user.getPassword())){
+                    String type = "";
+                    if(!UserValidation.checkNumber(user.getPhone())){
+                        type = "phone number (01*********)";
+                    }else if(!UserValidation.checkName(user.getName())){
+                        type = "user name";
+                    }else if(!UserValidation.checkPassword(user.getPassword())){
+                        type = "password";
                     }
 
-                } catch (Exception e) {
-                    throw new ApiRequestException(e.getMessage());
+                    throw new ApiRequestException("invalid "+ type);
+                }else {
+
+                   // throw new ApiRequestException("valid");
+                    try {
+
+                        if (apiService.mailExistence(user).size() >= 1) {
+                            throw new ApiRequestException("already registered with this email");
+                        } else {
+
+                            // throw new ApiRequestException("nothing with this email");
+                            CommonResponse response = new CommonResponse();
+                            if (apiService.userRegistration(user)) {
+                                response.message = "registration successful";
+                                response.statusCode = HttpStatus.OK.value();
+
+                            } else {
+                                response.message = "registration failed";
+                                response.statusCode = HttpStatus.FORBIDDEN.value();
+                            }
+
+                            return ResponseEntity.ok(response);
+                        }
+
+                    } catch (Exception e) {
+                        throw new ApiRequestException(e.getMessage());
+                    }
                 }
+
+
             }
         } catch (Exception e) {
             throw new ApiRequestException(e.getMessage());

@@ -55,7 +55,7 @@ public class ApiDaoImplementation implements ApiDao {
     @Override
     public List<User> getAllUser() {
 
-        String sqlQuery = "SELECT * from " + Constants.TBL_USER;
+        String sqlQuery = "SELECT * from " + Constants.TBL_USER +" ORDER BY id DESC";
         try {
             return jdbcTemplate.query(sqlQuery, new RowMapper<User>() {
                 @Override
@@ -230,7 +230,10 @@ public class ApiDaoImplementation implements ApiDao {
 
     @Override
     public List<Category> getAllCategoryAdmin() {
-        String query = "SELECT * from " + Constants.TBL_CATEGORY+ " ORDER BY id DESC";
+        String query = "SELECT * from " + Constants.TBL_CATEGORY +
+                //" ORDER BY id DESC" +
+                " WHERE status != 'delete'"+
+                " ORDER BY id DESC";
 
 
         try {
